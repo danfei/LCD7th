@@ -6,6 +6,13 @@
 //U8GLIB_NHD_C12864 u8g(10, 9, 8);    // HW SPI Com: CS = 10, A0 = 9, RST = 8 (Hardware Pins are  SCK = 13 and MOSI = 11)
 U8GLIB_JYG12864 u8g(6, 7, A5, A4, A3, A2, A1, A0, 12, 11, U8G_PIN_NONE, 13, 4, 5);
 // settings for I/O pins
+/*
+__________________
+|                |    15 
+|                |  8    16
+|________________|    14
+*/
+
 #define KEY_PIN_PREV 14            // pin for previous button
 #define KEY_PIN_NEXT 15            // pin for next button
 #define KEY_PIN_SELECT 8          // pin for select button
@@ -19,7 +26,7 @@ U8GLIB_JYG12864 u8g(6, 7, A5, A4, A3, A2, A1, A0, 12, 11, U8G_PIN_NONE, 13, 4, 5
 #define BLOCK_W 4            //  block width(pixels)
 #define BLOCK_H 4             //  block height(pixels)
 
-#define DROP_INTERVAL_INIT 250  // millisec
+#define DROP_INTERVAL_INIT 350  // millisec
 
 
 // key settings

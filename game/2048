@@ -1,0 +1,275 @@
+#include "U8glib.h"
+
+typedef unsigned char uchar;
+
+// SCK=3, MOSI=9, CS=8
+//U8GLIB_ST7920_128X64_1X lcd(3, 9, 8);
+U8GLIB_JYG12864 lcd(6, 7, A5, A4, A3, A2, A1, A0, 12, 11, U8G_PIN_NONE, 13, 4, 5);
+
+// settings for I/O pins
+/*
+__________________
+|                |    15 
+|                |  8    16
+|________________|    14
+*/
+
+#define UP      15
+#define DOWN    14
+#define LEFT    8
+#define RIGHT   16
+#define DISPLAY_BACKLIGHT_PIN 10
+
+uchar board[4][4] = {0};
+boolean gameOver = false;
+
+char number[][5] = {"", "2", "4", "8", "16", "32", "64", "128",
+    "256", "512", "1024", "2048", "4096", "8192", "####"    
+};
+
+void paintBoard()
+{
+    uchar left = 1;
+    uchar top = 5;
+    uchar spanV = 1, spanH = 1;
+    uchar textHeight = 10, textWidth = 7;
+
+    lcd.firstPage();
+    lcd.setFont(u8g_font_7x14);
+    lcd.setFontPosTop();
+    do {
+        // 绘制边框
+        for (uchar i=0; i<=4; i++)
+            lcd.drawHLine(left + spanH,
+                top + spanV*(2*i+1) + textHeight*i + 1*i,
+                10*spanH + 16*textWidth + 1*5 - spanH*2);
+        for (uchar i=0; i<=4; i++)
+            lcd.drawVLine(left + spanH*(2*i+1) + textWidth*4*i + 1*i,
+                top + spanV,
+                spanV*10 + textHeight*4 + 1*5 - spanV*2);
+
+        // 绘制文本
+        for (uchar i=0; i<4; i++)
+        {
+            for (uchar j=0; j<4; j++)
+            {
+                uchar x=left + spanH*2*(j+1) + textWidth*j*4 + 1*(j+1);
+                uchar y=top + spanV*2*(i+1) + textHeight*i + 1*(i+1) - 2;
+                lcd.drawStr(x, y, number[board[i][j]]);
+            }
+        }
+    } while (lcd.nextPage());
+}
+
+boolean move(uchar direction, boolean fake = false)
+{
+    uchar temp[4][4];
+    boolean changed = false;
+    memcpy(temp, board, sizeof(board));
+
+    switch (direction)
+    {
+        case UP:
+            for (char j=0; j<4; j++)
+            {
+                char p = 0, q = 0;
+                for (q=0; q<4; q++)
+                    if (temp[q][j])
+                    {
+                        if (p!=q) changed=true;
+                        temp[p++][j]=temp[q][j];
+                    }
+                for (; p<4; p++) temp[p][j] = 0;
+            }
+
+            for (char j=0; j<4; j++)
+                for (char i=0; i<3; i++)
+                    if (temp[i][j] && temp[i][j]==temp[i+1][j])
+                    {
+                        temp[i][j]++;
+                        temp[i+1][j]=0;
+                        changed=true;
+                    }
+
+            for (char j=0; j<4; j++)
+            {
+                char p = 0, q = 0;
+                for (q=0; q<4; q++) if (temp[q][j]) temp[p++][j]=temp[q][j];
+                for (; p<4; p++) temp[p][j] = 0;
+            }
+            break;
+
+        case DOWN:
+            for (char j=0; j<4; j++)
+            {
+                char p = 3, q = 0;
+                for (q=3; q>=0; q--)
+                    if (temp[q][j])
+                    {
+                        if (p!=q) changed=true;
+                        temp[p--][j]=temp[q][j];
+                    }
+                for (; p>=0; p--) temp[p][j] = 0;
+            }
+
+            for (char j=0; j<4; j++)
+                for (char i=3; i>0; i--)
+                    if (temp[i][j] && temp[i][j]==temp[i-1][j])
+                    {
+                        temp[i][j]++;
+                        temp[i-1][j]=0;
+                        changed=true;
+                    }
+
+            for (char j=0; j<4; j++)
+            {
+                char p = 3, q = 0;
+                for (q=3; q>=0; q--) if (temp[q][j]) temp[p--][j]=temp[q][j];
+                for (; p>=0; p--) temp[p][j] = 0;
+            }
+            break;
+
+        case LEFT:
+            for (char i=0; i<4; i++)
+            {
+                signed p = 0, q = 0;
+                for (q=0; q<4; q++)
+                    if (temp[i][q])
+                    {
+                        if (p!=q) changed=true;
+                        temp[i][p++]=temp[i][q];
+                    }
+                for (; p<4; p++) temp[i][p] = 0;
+            }
+
+            for (char i=0; i<4; i++)
+                for (char j=0; j<3; j++)
+                    if (temp[i][j] && temp[i][j]==temp[i][j+1])
+                    {
+                        temp[i][j]++;
+                        temp[i][j+1]=0;
+                        changed=true;
+                    }
+
+            for (char i=0; i<4; i++)
+            {
+                signed p = 0, q = 0;
+                for (q=0; q<4; q++) if (temp[i][q]) temp[i][p++]=temp[i][q];
+                for (; p<4; p++) temp[i][p] = 0;
+            }
+            break;
+
+        case RIGHT:
+            for (char i=0; i<4; i++)
+            {
+                signed p = 3, q = 0;
+                for (q=3; q>=0; q--)
+                    if (temp[i][q])
+                    {
+                        if (p!=q) changed=true;
+                        temp[i][p--]=temp[i][q];
+                    }
+                for (; p>=0; p--) temp[i][p] = 0;
+            }
+
+            for (char i=0; i<4; i++)
+                for (char j=3; j>0; j--)
+                    if (temp[i][j] && temp[i][j]==temp[i][j-1])
+                    {
+                        temp[i][j]++;
+                        temp[i][j-1]=0;
+                        changed=true;
+                    }
+
+            for (char i=0; i<4; i++)
+            {
+                signed p = 3, q = 0;
+                for (q=3; q>=0; q--) if (temp[i][q]) temp[i][p--]=temp[i][q];
+                for (; p>=0; p--) temp[i][p] = 0;
+            }
+            break;
+    }
+
+    if (!fake) memcpy(board, temp, sizeof(temp));
+    return changed;
+}
+
+void generateNumber()
+{
+    uchar emptyBlock[16], n;
+    n=0;
+    for (uchar i=0; i<4; i++)
+        for (uchar j=0; j<4; j++)
+            if (board[i][j] == 0)
+                emptyBlock[n++] = i*4+j;
+
+    if (n)
+    {
+        uchar p = random(0, n);
+        uchar x, y;
+        x = emptyBlock[p]/4;
+        y = emptyBlock[p]%4;
+        board[x][y] = 1;
+    }
+}
+
+void detectGameOver()
+{
+    if (move(LEFT, true) ||
+          move(RIGHT, true) ||
+          move(UP, true) ||
+          move(DOWN, true))
+        return;
+
+    gameOver = true;
+
+    lcd.firstPage();
+    lcd.setFont(u8g_font_ncenB14);
+    lcd.setFontPosTop();
+    do {
+        lcd.drawStr(3,23,"GAME OVER");
+    } while(lcd.nextPage());
+}
+
+void setup()
+{
+    lcd.setRot180();
+    digitalWrite(DISPLAY_BACKLIGHT_PIN,HIGH);
+    pinMode(15, INPUT_PULLUP);
+    pinMode(14, INPUT_PULLUP);
+    pinMode(8, INPUT_PULLUP);
+    pinMode(16, INPUT_PULLUP);
+
+    memset(board, 0, sizeof(board));
+    gameOver = false;
+
+    randomSeed(analogRead(0));
+
+    generateNumber();
+    generateNumber();
+
+    lcd.begin();
+    paintBoard();
+}
+
+void loop()
+{
+    int arr[4]={14,15,16,8};
+    if (!gameOver)
+    {
+        for (int i=0; i<=4; i++)
+        {
+            if (digitalRead(arr[i]) == LOW)
+            {
+                if (move(arr[i], true))
+                {
+                    move(arr[i]);
+                    generateNumber();
+                    paintBoard();
+                    detectGameOver();
+                    delay(200);
+                }
+           }
+        }
+    }
+}
