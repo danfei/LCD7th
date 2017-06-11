@@ -1,4 +1,5 @@
-# LCD7th
+LCD7th
+============
 It is an Arduino compatible board.
 
  - Circuit: [PDF](https://github.com/danfei/LCD7th/blob/master/LCD7th.pdf)
