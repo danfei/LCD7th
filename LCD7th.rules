@@ -11,7 +11,7 @@
     (via_costs 50)
     (plane_via_costs 5)
     (start_ripup_costs 100)
-    (start_pass_no 6874)
+    (start_pass_no 12040)
     (layer_rule F.Cu
       (active on)
       (preferred_direction vertical)
@@ -69,9 +69,9 @@
     "Net-(D3-Pad1)" "Net-(D4-Pad1)" "Net-(LCD1-Pad0)" "Net-(LCD1-Pad1)" "Net-(LCD1-Pad2)" "Net-(LCD1-Pad3)" "Net-(LCD1-Pad4)" "Net-(LCD1-Pad5)"
     "Net-(LCD1-Pad6)" "Net-(LCD1-Pad7)" "Net-(LCD1-Pad8)" "Net-(LCD1-Pad9)" "Net-(LCD1-Pad10)" "Net-(LCD1-Pad11)" "Net-(LCD1-Pad12)" "Net-(LCD1-Pad13)"
     "Net-(LCD1-Pad28)" "Net-(LED1-Pad1)" "Net-(LED1-Pad2)" "Net-(P1-Pad2)" "Net-(P1-Pad3)" /MISO /SCK /MOSI
-    "Net-(P3-Pad5)" /TX /RX /SDA /SCL "Net-(Q1-Pad1)" "Net-(Q1-Pad3)" /D+
-    "/D-" "Net-(R4-Pad2)" "/RX_LED" "/TX_LED" /BLED "Net-(SW4-Pad1)" "Net-(SW5-Pad2)" "Net-(U3-Pad2)"
-    "Net-(X1-Pad3)" "Net-(LED2-Pad1)" /BUZZER
+    "Net-(P3-Pad5)" /TX /RX /SDA /SCL /D+ "/D-" "Net-(R4-Pad2)"
+    "/RX_LED" "/TX_LED" "Net-(SW4-Pad1)" "Net-(U3-Pad2)" "Net-(X1-Pad3)" "Net-(LED2-Pad1)" /BUZZER /BATADC
+    "Net-(D1-Pad1)" "Net-(D4-Pad2)" "Net-(R11-Pad1)" "Net-(SW5-Pad1)" "Net-(SW7-Pad3)"
     (clearance_class "kicad_default")
     (via_rule kicad_default)
     (rule
