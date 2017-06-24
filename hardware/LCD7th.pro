@@ -1,4 +1,4 @@
-update=Sun Feb 26 13:52:17 2017
+update=Sun Jun 11 22:38:42 2017
 version=1
 last_client=kicad
 [pcbnew]
@@ -70,4 +70,3 @@ LibName28=atmel
 LibName29=contrib
 LibName30=valves
 LibName31=LCD7th
-LibName32=/home/dan/Documents/a20/a20
